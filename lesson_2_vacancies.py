@@ -28,8 +28,14 @@ while page_count <= 2:
             pay = 'None'
         else:
             pay = vac.find('div', {'class': 'vacancy-serp-item__compensation'}).getText()
-        min_pay = re.findall('\d+\s*\d+-|[от]+\s*[0-9]+\s*[0-9]+', pay)
+        min_pay = re.findall('(\d+[\s\d]*)-?', pay)
+
+        if len(min_pay) > 0:
+            min_pay = int(min_pay[0].replace('\xa0', ''))
+
         max_pay = re.findall('-([0-9]+\s*[0-9]+|[до]+\s*[0-9]+\s*[0-9]+)', pay)
+        if len(max_pay) > 0:
+            max_pay = int(max_pay[0].replace('\xa0', ''))
         if not max_pay:
             max_pay = 'None'
         if not min_pay:
@@ -64,8 +70,14 @@ while page_superjob <= 3:
         pay = vac_job.find('span',
                            {'class': '_3mfro _2Wp8I f-test-text-company-item-salary PlM3e _2JVkc _2VHxz'}).getText()
 
-        min_pay_job = re.findall('По договорённости|[от]\s[0-9]+\s[0-9]+|[0-9]+\s[0-9]+ —|[0-9]+\s[0-9]+', pay)
+        min_pay_job = re.findall('По договорённости|[от]\s[0-9]+\s[0-9]+|[0-9]+\s[0-9]+\s—|[0-9]+\s[0-9]+', pay)
         max_pay_job = re.findall('— ([0-9]+\s?[0-9]+)', pay)
+        if len(min_pay_job) > 0:
+            min_pay_job = min_pay_job[0].replace('\xa0', '')
+        if min_pay_job == 'По договорённости':
+            min_pay_job = 'None'
+        if len(max_pay_job) > 0:
+            max_pay_job = int(max_pay_job[0].replace('\xa0', ''))
         if not max_pay_job:
             max_pay_job = 'None'
         link_to_vac_job = vac_job.find('div', {'class': '_3syPg _1_bQo _2FJA4'}).findChild().findChild()['href']
